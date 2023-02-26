@@ -5,7 +5,7 @@ import "hardhat/console.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol"; 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
-contract YourContract {
+contract Compensator {
 
   event SetPurpose(address sender, string purpose);
 

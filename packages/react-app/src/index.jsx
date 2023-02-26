@@ -5,6 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
+import CssBaseline from "@mui/material/CssBaseline";
+
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 const themes = {
   dark: `${process.env.PUBLIC_URL}/dark-theme.css`,
@@ -24,6 +30,8 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <ThemeSwitcherProvider themeMap={themes} defaultTheme={prevTheme || "light"}>
       <BrowserRouter>
+        <CssBaseline />
+
         <App subgraphUri={subgraphUri} />
       </BrowserRouter>
     </ThemeSwitcherProvider>
