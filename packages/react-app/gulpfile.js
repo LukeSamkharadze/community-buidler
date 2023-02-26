@@ -10,7 +10,6 @@ gulp.task("less", function () {
   const plugins = [autoprefixer()];
 
   return gulp
-    .src("src/themes/*-theme.less")
     .pipe(debug({ title: "Less files:" }))
     .pipe(
       gulpless({
