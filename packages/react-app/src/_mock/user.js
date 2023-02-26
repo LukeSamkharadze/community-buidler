@@ -5,7 +5,7 @@ import { sample } from "lodash";
 
 const users = [...Array(24)].map((_, index) => ({
   id: faker.datatype.uuid(),
-  avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
+  avatarUrl: `https://miro.medium.com/v2/resize:fit:598/0*8or0oFmHDRKnlETg`,
   name: faker.name.fullName(),
   company: faker.company.name(),
   isVerified: faker.datatype.boolean(),

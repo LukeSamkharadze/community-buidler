@@ -3,38 +3,36 @@ import { Navigate, useRoutes } from "react-router-dom";
 import DashboardLayout from "./layouts/dashboard";
 import SimpleLayout from "./layouts/simple";
 //
-import BlogPage from "./pages/BlogPage";
-import UserPage from "./pages/UserPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import AdminPage from "./pages/AdminPage";
 import LoginPage from "./pages/LoginPage";
 import Page404 from "./pages/Page404";
-import ProductsPage from "./pages/ProductsPage";
-import DashboardAppPage from "./pages/DashboardAppPage";
+import JobsPage from "./pages/JobsPage";
+import DashboardPage from "./pages/DashboardPage";
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const routes = useRoutes([
     {
+      path: "/",
+      element: <SimpleLayout />,
+      children: [{ path: "404", element: <Page404 /> }],
+    },
+    {
       path: "/dashboard",
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: "app", element: <DashboardAppPage /> },
-        { path: "jobs", element: <UserPage /> },
-        { path: "products", element: <ProductsPage /> },
-        { path: "blog", element: <BlogPage /> },
+        { path: "app", element: <DashboardPage /> },
+        { path: "jobs", element: <JobsPage /> },
+        { path: "leaderboard", element: <LeaderboardPage /> },
+        { path: "admin-panel", element: <AdminPage /> },
       ],
     },
     {
       path: "login",
       element: <LoginPage />,
-    },
-    {
-      element: <SimpleLayout />,
-      children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: "404", element: <Page404 /> },
-      ],
     },
     {
       path: "*",

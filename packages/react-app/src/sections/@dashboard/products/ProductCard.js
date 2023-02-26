@@ -18,6 +18,14 @@ const StyledProductImg = styled("img")({
   position: "absolute",
 });
 
+const StyledLogoImg = styled("img")({
+  width: 24,
+  height: 24,
+  objectFit: "cover",
+  borderRadius: "50%",
+  display: "inline-block",
+});
+
 // ----------------------------------------------------------------------
 
 ShopProductCard.propTypes = {
@@ -30,7 +38,7 @@ export default function ShopProductCard({ product }) {
   return (
     <Card>
       <Box sx={{ pt: "100%", position: "relative" }}>
-        {status && (
+        {/* {status && (
           <Label
             variant="filled"
             color={(status === "sale" && "error") || "info"}
@@ -44,7 +52,7 @@ export default function ShopProductCard({ product }) {
           >
             {status}
           </Label>
-        )}
+        )} */}
         <StyledProductImg alt={name} src={cover} />
       </Box>
 
@@ -55,8 +63,9 @@ export default function ShopProductCard({ product }) {
           </Typography>
         </Link>
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={colors} />
+        <Stack direction="row" alignItems="center" justifyContent="flex-end">
+          {/* <ColorPreview colors={['#00AB55']} /> */}
+          <StyledLogoImg src="https://w7.pngwing.com/pngs/538/660/png-transparent-cryptocurrency-wallet-computer-icons-coin-coin-trademark-orange-logo-thumbnail.png"></StyledLogoImg>
           <Typography variant="subtitle1">
             <Typography
               component="span"
@@ -69,7 +78,11 @@ export default function ShopProductCard({ product }) {
               {priceSale && fCurrency(priceSale)}
             </Typography>
             &nbsp;
-            {fCurrency(price)}
+            {/* <Stack direction='row' alignItems='center' >
+
+            </Stack> */}
+            {price}
+            {/* {fCurrency(price)} */}
           </Typography>
         </Stack>
       </Stack>

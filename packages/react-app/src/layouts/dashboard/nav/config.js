@@ -1,30 +1,35 @@
-// component
 import SvgColor from "../../../components/svg-color";
-
-// ----------------------------------------------------------------------
-
-const icon = name => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import WorkIcon from "@mui/icons-material/Work";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
+import HandshakeIcon from "@mui/icons-material/Handshake";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 
 const navConfig = [
   {
     title: "dashboard",
     path: "/dashboard/app",
-    icon: icon("ic_analytics"),
+    icon: <DashboardIcon />,
   },
   {
     title: "jobs",
     path: "/dashboard/jobs",
-    icon: icon("ic_cart"),
+    icon: <WorkIcon />,
   },
   {
     title: "leaderboard",
-    path: "/dashboard/blog",
-    icon: icon("ic_blog"),
+    path: "/dashboard/leaderboard",
+    icon: <LeaderboardIcon />,
+  },
+  {
+    title: "Referral",
+    path: "/dashboard/referral",
+    icon: <HandshakeIcon />,
   },
   {
     title: "Admin panel",
-    path: "/dashboard/user",
-    icon: icon("ic_user"),
+    path: "/dashboard/admin-panel",
+    icon: <AdminPanelSettingsIcon />,
   },
 ];
 
