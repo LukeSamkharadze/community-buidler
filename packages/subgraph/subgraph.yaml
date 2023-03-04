@@ -1,25 +1,42 @@
-specVersion: 0.0.4
+specVersion: 0.0.5
 schema:
-  file: ./src/schema.graphql
+  file: ./schema.graphql
 dataSources:
-  - kind: ethereum/contract
-    name: YourContract
-    network: localhost
+  - kind: ethereum
+    name: CommunityToken
+    network: mumbai
     source:
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-      abi: YourContract
-      startBlock: 1
+      address: "0x6B66ed45f354c1861b2d2f3A12F479Be11CfD2a6"
+      abi: CommunityToken
+      startBlock: 32708218
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - Purpose
-        - Sender
+        - ContributorAdded
+        - ContributorPayout
+        - EventAdded
+        - OwnershipTransferred
+        - Paused
+        - Unpaused
+        - VisitorJoinedEvent
       abis:
-        - name: YourContract
-          file: ./abis/localhost_YourContract.json
+        - name: CommunityToken
+          file: ./abis/CommunityToken.json
       eventHandlers:
-        - event: SetPurpose(address,string)
-          handler: handleSetPurpose
-      file: ./src/mapping.ts
+        - event: ContributorAdded(indexed address)
+          handler: handleContributorAdded
+        - event: ContributorPayout(indexed address,uint256)
+          handler: handleContributorPayout
+        - event: EventAdded(indexed uint256,indexed address,string,uint256)
+          handler: handleEventAdded
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Paused(address)
+          handler: handlePaused
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: VisitorJoinedEvent(indexed uint256,indexed address)
+          handler: handleVisitorJoinedEvent
+      file: ./src/community-token.ts
