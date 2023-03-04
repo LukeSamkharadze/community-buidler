@@ -47,7 +47,7 @@ contract CommunityBuilder is Pausable, Ownable {
         require(address(_tokenAddress) != address(0),"Token Address cannot be address 0");  
         communityToken = CommunityToken(_tokenAddress);
 
-        s_communityTokenBalance = communityToken.balanceOf(address(this));
+//        s_communityTokenBalance = communityToken.balanceOf(address(this));
     }
 
     function addContributor(address _contributor) external onlyOwner {
