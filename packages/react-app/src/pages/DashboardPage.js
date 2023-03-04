@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import { faker } from "@faker-js/faker";
 // @mui
+import { Navigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { Grid, Container, Typography } from "@mui/material";
 // components
 import Iconify from "../components/iconify";
 // sections
@@ -17,11 +17,42 @@ import {
   AppCurrentSubject,
   AppConversionRates,
 } from "../sections/@dashboard/app";
-
+import { Grid, Link, Container, Typography, Divider, Stack, Button } from "@mui/material";
+import { useCallback } from "react";
+import { useAccount, WagmiConfig, useSigner, useNetwork } from "wagmi";
+import { useContract } from "wagmi";
+import contractConfig from "../contracts/hardhat_contracts.json";
+import { ethers } from "ethers";
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
-  const theme = useTheme();
+  // const theme = useTheme();
+
+  // WAGMI get chanId
+  const { connector, address } = useAccount();
+  const { data: signer, isError, isLoading } = useSigner();
+  const { chain } = useNetwork();
+
+  const CommunityBuilder = useContract({
+    address: contractConfig[chain.id][0].contracts.CommunityBuilder.address,
+    abi: contractConfig[chain.id][0].contracts.CommunityBuilder.abi,
+    signerOrProvider: signer,
+  });
+
+  const CommunityToken = useContract({
+    address: contractConfig[chain.id][0].contracts.CommunityToken.address,
+    abi: contractConfig[chain.id][0].contracts.CommunityToken.abi,
+    signerOrProvider: signer,
+  });
+
+  const payout = useCallback(async () => {
+    // await CommunityToken.approve(CommunityBuilder.address, ethers.utils.parseEther("10000000000000"));
+    await CommunityBuilder.Payout();
+  }, [CommunityBuilder, CommunityToken]);
+
+  if (!address) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <>
@@ -33,8 +64,16 @@ export default function DashboardAppPage() {
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
         </Typography>
-
         <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <AppWidgetSummary title="Balance" total={1352831} color="info" icon={"ant-design:copyright-outlined"} />
+          </Grid>
+        </Grid>
+        <br />
+        <Button variant="contained" onClick={payout}>
+          Payout
+        </Button>
+        {/* <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Weekly Sales" total={714000} icon={"ant-design:android-filled"} />
           </Grid>
@@ -212,7 +251,7 @@ export default function DashboardAppPage() {
               ]}
             />
           </Grid>
-        </Grid>
+        </Grid> */}
       </Container>
     </>
   );
