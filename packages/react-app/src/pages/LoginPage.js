@@ -128,7 +128,7 @@ function LoginButton() {
     <div>
       {/* if the user has not yet connected their wallet, show a connect button */}
       {!address && (
-        <Button variant="contained" onClick={connect(connectors[0])}>
+        <Button variant="contained" onClick={() => connect({ connector: connectors[0] })}>
           Connect Wallet
         </Button>
       )}
