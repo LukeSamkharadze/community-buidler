@@ -169,6 +169,7 @@ export default function UserPage() {
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <UserListHead
+                  showCheckbox
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}

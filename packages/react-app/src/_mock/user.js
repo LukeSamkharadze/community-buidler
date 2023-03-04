@@ -22,6 +22,10 @@ const users = [...Array(24)].map((_, index) => ({
     "Front End Developer",
     "Full Stack Developer",
   ]),
+  rating: faker.datatype.number({
+    min: 0,
+    max: 500,
+  }),
 }));
 
 export default users;
