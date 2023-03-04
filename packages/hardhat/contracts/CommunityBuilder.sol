@@ -16,9 +16,6 @@ import "./CommunityEventTypes.sol";
 
 contract CommunityBuilder is Pausable, Ownable {
     CommunityToken public immutable communityToken;
-    uint256 private s_communityTokenBalance;
-
-    mapping (address => uint256) private s_contributorTokens;
     
     uint256 private s_contributorCount;
     address[] private s_contributors;    // stored twice, suggest cleanup
@@ -54,10 +51,8 @@ contract CommunityBuilder is Pausable, Ownable {
         require (communityToken.balanceOf(address(this)) >= 1, "Unable to add new contributor, insufficient contract token balance");
 
         // adding a contributor givens them 1 token
-        if (s_contributorTokens[_msgSender()] == 0) {
+        if (getTokenBalance(_contributor) == 0) {
             communityToken.transfer(_contributor, 1);
-            s_contributorTokens[_msgSender()] = 1;
-            s_communityTokenBalance--;
             s_contributors[s_contributorCount++] = _contributor;
 
             emit ContributorAdded(_contributor);
@@ -73,9 +68,6 @@ contract CommunityBuilder is Pausable, Ownable {
 
         communityToken.transfer(s_EventsArray[_eventId].contributor, s_EventsArray[_eventId].eventValue);
 
-        s_communityTokenBalance -= s_EventsArray[_eventId].eventValue;
-        s_contributorTokens[s_EventsArray[_eventId].contributor] += s_EventsArray[_eventId].eventValue;
-// pickup here
         emit VisitorJoinedEvent(_eventId, _msgSender());
     }
 
@@ -116,12 +108,17 @@ contract CommunityBuilder is Pausable, Ownable {
     }
 
     function Payout() external {
-        //payout transfers all contributor tokens -1 back to contract
-        uint256 balance = s_contributorTokens[_msgSender()] - 1;
+        uint256 senderBalance = getTokenBalance(_msgSender());
 
-        require (communityToken.allowance(_msgSender(), address(this)) == balance, "Allowance Insufficient, Sender needs to approve transfer");
-        communityToken.transferFrom(_msgSender(), address(this), balance-1);
+        require (senderBalance > 1, "Balance Insufficient, more than 1 token is needed to call payout");
 
-        emit ContributorPayout(_msgSender(), balance-1);
+        communityToken.transferFrom(_msgSender(), address(this), senderBalance);
+
+        emit ContributorPayout(_msgSender(), senderBalance);
     }
+
+    function getTokenBalance(address _address) public view returns (uint256) {
+        return communityToken.balanceOf(_address);
+    }
+
 }
