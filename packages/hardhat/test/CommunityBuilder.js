@@ -15,14 +15,14 @@ describe('Community Community Builder Contract', () => {
 
         return { CommunityBuilderContract, CommunityTokenContract, owner };
     }
-/*
+
     describe("Deployment", function () {
         it("Fails if token address is not 0", async function () {
             const { CommunityBuilderContract } = await loadFixture(deployCommunityBuilderFixture);
-            expect(await CommunityBuilderContract.CommunityToken.address).to.not.equal(0);
+            expect(await CommunityBuilderContract.communityToken.address).to.not.equal(0);
         });
     });
-*/
+
     describe("addContributor", function () {
         it("Fails if contract token balance is insufficient", async function () {
             const { CommunityBuilderContract, CommunityTokenContract } = await loadFixture(deployCommunityBuilderFixture);
