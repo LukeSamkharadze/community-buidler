@@ -18,7 +18,7 @@ import {
   AppConversionRates,
 } from "../sections/@dashboard/app";
 import { Grid, Link, Container, Typography, Divider, Stack, Button } from "@mui/material";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useAccount, WagmiConfig, useSigner, useNetwork } from "wagmi";
 import { useContract } from "wagmi";
 import contractConfig from "../contracts/hardhat_contracts.json";
@@ -30,8 +30,10 @@ export default function DashboardAppPage() {
 
   // WAGMI get chanId
   const { connector, address } = useAccount();
-  const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer, isError } = useSigner();
   const { chain } = useNetwork();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const CommunityBuilder = useContract({
     address: contractConfig[chain.id][0].contracts.CommunityBuilder.address,
@@ -46,9 +48,24 @@ export default function DashboardAppPage() {
   });
 
   const payout = useCallback(async () => {
-    // await CommunityToken.approve(CommunityBuilder.address, ethers.utils.parseEther("10000000000000"));
-    await CommunityBuilder.Payout();
-  }, [CommunityBuilder, CommunityToken]);
+    // Check if the user has approved the CommunityBuilder to spend the CommunityToken
+    try {
+      setIsLoading(true);
+
+      const allowance = await CommunityToken.allowance(address, CommunityBuilder.address);
+      const userBalance = await CommunityToken.balanceOf(address);
+
+      if (allowance < userBalance) {
+        const txt = await CommunityToken.approve(CommunityBuilder.address, ethers.utils.parseEther("1000000000000000"));
+        await txt.wait();
+      }
+
+      await CommunityBuilder.Payout();
+    } catch (e) {
+      console.error(e);
+    }
+    setIsLoading(false);
+  }, [CommunityBuilder, CommunityToken, address]);
 
   if (!address) {
     return <Navigate to="/login" />;
@@ -70,7 +87,7 @@ export default function DashboardAppPage() {
           </Grid>
         </Grid>
         <br />
-        <Button variant="contained" onClick={payout}>
+        <Button variant="contained" disabled={isLoading} onClick={payout}>
           Payout
         </Button>
         {/* <Grid container spacing={3}>
