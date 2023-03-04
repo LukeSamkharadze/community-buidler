@@ -29,6 +29,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: "app", element: <DashboardPage /> },
         { path: "jobs", element: <JobsPage /> },
+        { path: "referral", element: <JobsPage /> },
         { path: "leaderboard", element: <LeaderboardPage /> },
         { path: "admin-panel", element: <AdminPage /> },
       ],

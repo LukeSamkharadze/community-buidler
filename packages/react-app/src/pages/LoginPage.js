@@ -3,12 +3,33 @@ import { Helmet } from "react-helmet-async";
 import { styled } from "@mui/material/styles";
 import { Link, Container, Typography, Divider, Stack, Button } from "@mui/material";
 // hooks
+// import {
+//   Button,
+//   Card,
+//   Descriptions,
+//   Divider,
+//   Drawer,
+//   InputNumber,
+//   Modal,
+//   notification,
+//   Row,
+//   Select,
+//   Space,
+//   Tooltip,
+//   Typography,
+// } from "antd";
 import useResponsive from "../hooks/useResponsive";
 // components
 import Logo from "../components/logo";
 import Iconify from "../components/iconify";
 // sections
-import { LoginForm } from "../sections/auth/login";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import { Navigate } from "react-router-dom";
+// import { challenge, authenticate } from "../api";
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +61,89 @@ const StyledContent = styled("div")(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
+const API_URL = "https://api.lens.dev";
+
+export const client = new ApolloClient({
+  uri: API_URL,
+  cache: new InMemoryCache(),
+});
+
+export const challenge = gql`
+  query Challenge($address: EthereumAddress!) {
+    challenge(request: { address: $address }) {
+      text
+    }
+  }
+`;
+
+export const authenticate = gql`
+  mutation Authenticate($address: EthereumAddress!, $signature: Signature!) {
+    authenticate(request: { address: $address, signature: $signature }) {
+      accessToken
+      refreshToken
+    }
+  }
+`;
+
+function LoginButton() {
+  /* local state variables to hold user's address and access token */
+  const [token, setToken] = useState();
+
+  const { connector: activeConnector, isConnected, address } = useAccount();
+  const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+
+  async function login() {
+    try {
+      /* first request the challenge from the API server */
+      const challengeInfo = await client.query({
+        query: challenge,
+        variables: { address },
+      });
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      /* ask the user to sign a message with the challenge info returned from the server */
+      const signature = await signer.signMessage(challengeInfo.data.challenge.text);
+      /* authenticate the user */
+      const authData = await client.mutate({
+        mutation: authenticate,
+        variables: {
+          address,
+          signature,
+        },
+      });
+      /* if user authentication is successful, you will receive an accessToken and refreshToken */
+      const {
+        data: {
+          authenticate: { accessToken },
+        },
+      } = authData;
+      console.log({ accessToken });
+      setToken(accessToken);
+    } catch (err) {
+      console.log("Error signing in: ", err);
+    }
+  }
+
+  return (
+    <div>
+      {/* if the user has not yet connected their wallet, show a connect button */}
+      {!address && (
+        <Button variant="contained" onClick={connect(connectors[0])}>
+          Connect Wallet
+        </Button>
+      )}
+      {/* if the user has connected their wallet but has not yet authenticated, show them a login Button */}
+      {address && !token && (
+        <Button variant="contained" onClick={login}>
+          Login with LENS
+        </Button>
+      )}
+      {/* once the user has authenticated, show them a success message */}
+      {address && token && <Navigate to="/dashboard/app" />}
+    </div>
+  );
+}
+
 export default function LoginPage() {
   const mdUp = useResponsive("up", "md");
 
@@ -70,35 +174,12 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
-            </Typography>
-
-            <Typography variant="body2" sx={{ mb: 5 }}>
-              Don’t have an account? {""}
-              <Link variant="subtitle2">Get started</Link>
+              Sign in
             </Typography>
 
             <Stack direction="row" spacing={2}>
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
-              </Button>
-
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify icon="eva:facebook-fill" color="#1877F2" width={22} height={22} />
-              </Button>
-
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify icon="eva:twitter-fill" color="#1C9CEA" width={22} height={22} />
-              </Button>
+              <LoginButton />
             </Stack>
-
-            <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                OR
-              </Typography>
-            </Divider>
-
-            <LoginForm />
           </StyledContent>
         </Container>
       </StyledRoot>
