@@ -16,7 +16,7 @@ contract CommunityEventTypes is Ownable {
 
     eventType[] private s_eventTypes;
 
-    constructor () {}
+//    constructor () {}
 /*
 ["testname", 123]
 
