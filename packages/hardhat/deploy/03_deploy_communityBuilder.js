@@ -16,6 +16,6 @@ module.exports = async ({ getNamedAccounts, deployments}) => {
     })
 
     console.log(
-        `Deployed CommunityBuilder.sol to ${communityBuilder.address} with ${process.env.TOKEN_ADDRESS} as communityBuilder address`
+        `Deployed CommunityBuilder.sol to ${communityBuilder.address} with ${process.env.TOKEN_ADDRESS} as communityToken address`
       );
 }
