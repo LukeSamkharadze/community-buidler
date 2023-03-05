@@ -9,6 +9,8 @@ import LoginPage from "./pages/LoginPage";
 import Page404 from "./pages/Page404";
 import JobsPage from "./pages/JobsPage";
 import DashboardPage from "./pages/DashboardPage";
+import ReferralPage from "./pages/ReferralPage";
+import VisitorPage from "./pages/VisitorPage";
 
 // ----------------------------------------------------------------------
 
@@ -29,9 +31,10 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: "app", element: <DashboardPage /> },
         { path: "jobs", element: <JobsPage /> },
-        { path: "referral", element: <JobsPage /> },
+        { path: "referral", element: <ReferralPage /> },
         { path: "leaderboard", element: <LeaderboardPage /> },
         { path: "admin-panel", element: <AdminPage /> },
+        { path: "visitor", element: <VisitorPage /> },
       ],
     },
     {

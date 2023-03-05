@@ -1,3 +1,3 @@
 export default function ReferralPage() {
-  return <h1>Referral page</h1>;
+  return <h1>COMING SOON</h1>;
 }

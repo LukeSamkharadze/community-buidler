@@ -4,6 +4,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import WhereToVoteIcon from "@mui/icons-material/WhereToVote";
 
 const navConfig = [
   {
@@ -25,6 +26,11 @@ const navConfig = [
     title: "Referral",
     path: "/dashboard/referral",
     icon: <HandshakeIcon />,
+  },
+  {
+    title: "Visitor",
+    path: "/dashboard/visitor",
+    icon: <WhereToVoteIcon />,
   },
   {
     title: "Admin panel",
