@@ -27,9 +27,9 @@ function Scrollbar({ children, sx, ...other }) {
 
   return (
     <StyledRootScrollbar>
-      <StyledScrollbar timeout={500} clickOnTrack={false} sx={sx} {...other}>
-        {children}
-      </StyledScrollbar>
+      {/* <StyledScrollbar timeout={500} clickOnTrack={false} sx={sx} {...other}> */}
+      {children}
+      {/* </StyledScrollbar> */}
     </StyledRootScrollbar>
   );
 }
