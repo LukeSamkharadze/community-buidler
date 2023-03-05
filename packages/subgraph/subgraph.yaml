@@ -6,9 +6,9 @@ dataSources:
     name: CommunityToken
     network: mumbai
     source:
-      address: "0x830e377d223668d08c09A7E29Ca912F0c693a591"
+      address: "0xC84275fF811E1518Fd17AB9Ab15aB0cbd19A1aB1"
       abi: CommunityToken
-      startBlock: 32713739
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
