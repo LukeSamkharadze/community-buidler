@@ -18,7 +18,11 @@ contract CommunityEventTypes is Ownable {
 
 //    constructor () {}
 /*
-["testname", 123]
+["Webinar Hosting", 25]
+["Webinar - Guest Speaker", 25]
+["Webinar - Code-along", 25]
+["In Person Workshop - Guest Speaker", 50]
+["In Person Workshop - Host", 50]
 
     constructor (string[] memory _eventTypes)
     {
@@ -26,6 +30,7 @@ contract CommunityEventTypes is Ownable {
             Add(s_eventTypes[i]);
     }
 */
+    event EventTypeAdded(string type_name, uint256 type_value);
 
     function Add(eventType memory _eventType) public onlyOwner {
         require(bytes(_eventType.eventTypeName).length > 0,"Empty string not allowed as an event type");
@@ -36,6 +41,8 @@ contract CommunityEventTypes is Ownable {
         __eventType.eventTypeValue = _eventType.eventTypeValue;
 
         s_eventTypes.push(__eventType);
+
+        emit EventTypeAdded(_eventType.eventTypeName, _eventType.eventTypeValue);
     }
 
     function Get() external view returns (eventType[] memory) {

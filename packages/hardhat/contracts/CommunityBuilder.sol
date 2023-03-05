@@ -18,7 +18,7 @@ contract CommunityBuilder is Pausable, Ownable {
     CommunityToken public immutable communityToken;
     
     uint256 private s_contributorCount;
-    address[] private s_contributors;    // stored twice, suggest cleanup
+    address[] private s_contributors; 
 
     uint256 private s_eventCount;
 
@@ -28,10 +28,8 @@ contract CommunityBuilder is Pausable, Ownable {
         uint256 eventValue;
     }
 
-    mapping (address => Event[]) private s_EventsMap;
-
-    mapping (uint256 => uint256 ) private s_EventVisitorCount;
-    mapping (uint256 => mapping (uint256 => address)) private s_EventVisitors;
+    mapping (uint256 => uint256 ) public s_EventVisitorCount;   // cchange back to private
+    mapping (uint256 => mapping (uint256 => address)) public s_EventVisitors; // cchange back to private
 
     Event[] private s_EventsArray;
 
@@ -43,24 +41,25 @@ contract CommunityBuilder is Pausable, Ownable {
     constructor(address _tokenAddress) {
         require(address(_tokenAddress) != address(0),"Token Address cannot be address 0");  
         communityToken = CommunityToken(_tokenAddress);
-
-//        s_communityTokenBalance = communityToken.balanceOf(address(this));
     }
 
-    function addContributor(address _contributor) external onlyOwner {
-        require (communityToken.balanceOf(address(this)) >= 1, "Unable to add new contributor, insufficient contract token balance");
+    function AddContributor(address _contributor) external onlyOwner {
+        uint256 balance = GetTokenBalance(address(this));
+        require (balance >= 1,  "Unable to add new contributor, insufficient contract token balance");
 
         // adding a contributor givens them 1 token
-        if (getTokenBalance(_contributor) == 0) {
+        if (GetTokenBalance(_contributor) == 0) {
             communityToken.transfer(_contributor, 1);
-            s_contributors[s_contributorCount++] = _contributor;
+            s_contributors.push(_contributor);
+            s_contributorCount++;
 
             emit ContributorAdded(_contributor);
         }
     }
 
     function JoinEvent(uint _eventId) external {
-        require (s_EventsMap[msg.sender][s_eventCount].contributor != _msgSender(), "Contributor cannot join their own event");
+        require (s_EventsArray[_eventId].contributor != _msgSender(), "Contributor cannot join their own event");
+        
         s_EventVisitors[_eventId][s_EventVisitorCount[_eventId]++] = _msgSender();
 
         // transfer tokens here
@@ -71,12 +70,12 @@ contract CommunityBuilder is Pausable, Ownable {
         emit VisitorJoinedEvent(_eventId, _msgSender());
     }
 
-    function getContributors() external view onlyOwner returns (address[] memory) 
+    function GetContributors() external view onlyOwner returns (address[] memory) 
     {
         return s_contributors;
     }
 
-    function CreateEvent(CommunityEventTypes.eventType memory _eventType) external returns (uint256)
+    function ContributorCreateEvent(CommunityEventTypes.eventType memory _eventType) external returns (uint256)
     {
         return CreateEvent(msg.sender, _eventType);
     }
@@ -87,28 +86,20 @@ contract CommunityBuilder is Pausable, Ownable {
         require(address(_msgSender()) != address(0),"Contributor Address cannot be address 0");  
         require(bytes(_eventType.eventTypeName).length > 0,"Empty string not allowed as event type");
 
-        s_EventsMap[msg.sender][s_eventCount].contributor = _contributor;
-        s_EventsMap[msg.sender][s_eventCount].eventType = _eventType.eventTypeName;
-        s_EventsMap[msg.sender][s_eventCount].eventValue = _eventType.eventTypeValue;
-
         s_EventsArray.push(Event(
-            _msgSender(), _eventType.eventTypeName, _eventType.eventTypeValue));
+            _contributor, _eventType.eventTypeName, _eventType.eventTypeValue));
 
-        emit EventAdded(s_eventCount, _msgSender(), _eventType.eventTypeName, _eventType.eventTypeValue);
+        emit EventAdded(s_eventCount, _contributor, _eventType.eventTypeName, _eventType.eventTypeValue);
 
-        return (s_eventCount++-1);
+        return s_eventCount++;
     }
 
     function GetEvents() external view onlyOwner returns (Event[] memory) {
         return s_EventsArray;
     }
 
-    function GetContributorEvents(address _contributor) external view returns (Event[] memory) {
-        return s_EventsMap[_contributor];
-    }
-
     function Payout() external {
-        uint256 senderBalance = getTokenBalance(_msgSender());
+        uint256 senderBalance = GetTokenBalance(_msgSender());
 
         require (senderBalance > 1, "Balance Insufficient, more than 1 token is needed to call payout");
 
@@ -117,8 +108,7 @@ contract CommunityBuilder is Pausable, Ownable {
         emit ContributorPayout(_msgSender(), senderBalance);
     }
 
-    function getTokenBalance(address _address) public view returns (uint256) {
+    function GetTokenBalance(address _address) public view returns (uint256) {
         return communityToken.balanceOf(_address);
     }
-
 }
