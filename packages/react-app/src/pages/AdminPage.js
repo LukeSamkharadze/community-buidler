@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // @mui
 import {
   Card,
@@ -30,7 +30,8 @@ import Scrollbar from "../components/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
-
+import { useQuery } from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -39,8 +40,33 @@ const TABLE_HEAD = [
   { id: "role", label: "Role", alignRight: false },
   { id: "isVerified", label: "Verified", alignRight: false },
   { id: "status", label: "Status", alignRight: false },
+  { id: "wallet", label: "Wallet", alignRight: false },
   { id: "" },
 ];
+
+const API_URL = "https://api.studio.thegraph.com/query/43399/communitybuilder3/v0.0.1";
+
+export const client = new ApolloClient({
+  uri: API_URL,
+  cache: new InMemoryCache(),
+});
+
+export const contributorData = gql`
+  query contributorData {
+    contributorAddeds(first: 5) {
+      id
+      contributor
+      blockNumber
+      blockTimestamp
+    }
+    contributorPayouts(first: 5) {
+      id
+      contributor
+      payout_amount
+      blockNumber
+    }
+  }
+`;
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +108,7 @@ export default function UserPage() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState("name");
+  const [orderBy, setOrderBy] = useState("wallet");
 
   const [filterName, setFilterName] = useState("");
 
@@ -142,7 +168,30 @@ export default function UserPage() {
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  // GRAPHQL query that updates state after the query is executed
+  const {
+    loading,
+    error,
+    data: contributorDataResponse,
+  } = useQuery(contributorData, {
+    client: client,
+    onCompleted: data => {
+      console.log(data);
+    },
+  });
+
+  const userList = useMemo(() => {
+    return USERLIST.map((o, i) => {
+      return {
+        ...o,
+        wallet: contributorDataResponse?.contributorAddeds[i]?.contributor,
+        // isVerified: o.isVerified ? <Label variant="ghost" color="success" /> : <Label variant="ghost" color="error" />,
+        // status: o.status ? <Label variant="ghost" color="success" /> : <Label variant="ghost" color="error" />,
+      };
+    });
+  }, [contributorDataResponse]);
+
+  const filteredUsers = applySortFilter(userList, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -180,7 +229,7 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
+                    const { id, name, role, status, company, avatarUrl, isVerified, wallet } = row;
                     const selectedUser = selected.indexOf(name) !== -1;
 
                     return (
@@ -207,6 +256,8 @@ export default function UserPage() {
                         <TableCell align="left">
                           <Label color={(status === "banned" && "error") || "success"}>{sentenceCase(status)}</Label>
                         </TableCell>
+
+                        <TableCell align="left">{wallet}</TableCell>
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
