@@ -49,9 +49,7 @@ export default function App() {
           <ThemeProvider>
             <ScrollToTop />
             <StyledChart />
-            <WagmiConfig client={wagmiClient}>
-              <Router />
-            </WagmiConfig>
+            <WagmiConfig client={wagmiClient}>{/* <Router /> */}</WagmiConfig>
           </ThemeProvider>
         </ApolloProvider>
       </BrowserRouter>

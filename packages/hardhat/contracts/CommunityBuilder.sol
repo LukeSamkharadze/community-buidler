@@ -28,8 +28,8 @@ contract CommunityBuilder is Pausable, Ownable {
         uint256 eventValue;
     }
 
-    mapping (uint256 => uint256 ) public s_EventVisitorCount;   // cchange back to private
-    mapping (uint256 => mapping (uint256 => address)) public s_EventVisitors; // cchange back to private
+    mapping (uint256 => uint256 ) public s_EventVisitorCount;   // change back to private
+    mapping (uint256 => mapping (uint256 => address)) public s_EventVisitors; // change back to private
 
     Event[] private s_EventsArray;
 
@@ -39,13 +39,13 @@ contract CommunityBuilder is Pausable, Ownable {
     event VisitorJoinedEvent(uint256 indexed event_id, address indexed visitor);
 
     constructor(address _tokenAddress) {
-        require(address(_tokenAddress) != address(0),"Token Address cannot be address 0");  
+        // require(address(_tokenAddress) != address(0),"Token Address cannot be address 0");  
         communityToken = CommunityToken(_tokenAddress);
     }
 
     function AddContributor(address _contributor) external onlyOwner {
         uint256 balance = GetTokenBalance(address(this));
-        require (balance >= 1,  "Unable to add new contributor, insufficient contract token balance");
+        require (balance >= 0.1,  "Unable to add new contributor, insufficient contract token balance");
 
         // adding a contributor givens them 1 token
         if (GetTokenBalance(_contributor) == 0) {
