@@ -45,7 +45,7 @@ contract CommunityBuilder is Pausable, Ownable {
 
     function AddContributor(address _contributor) external onlyOwner {
         uint256 balance = GetTokenBalance(address(this));
-        require (balance >= 1,  "Unable to add new contributor, insufficient contract token balance");
+        require (balance >= 0.1,  "Unable to add new contributor, insufficient contract token balance");
 
         // adding a contributor givens them 1 token
         if (GetTokenBalance(_contributor) == 0) {
